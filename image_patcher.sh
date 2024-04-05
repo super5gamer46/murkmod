@@ -181,16 +181,6 @@ main() {
     echo "\"$1\" isn't a real file, dipshit! You need to pass the path to the recovery image. Optional args: <path to custom bootsplash: path to a png> <unfuck stateful: int 0 or 1>"
     exit
   fi
-  if [ -z $2 ]; then
-    echo "Not using a custom bootsplash."
-    local bootsplash="0"
-  elif [ ! -f $2 ]; then
-    echo "file $2 not found for custom bootsplash"
-    local bootsplash="0"
-  else
-    echo "Using custom bootsplash $2"
-    local bootsplash=$2
-  fi
   if [ -z $3 ]; then
     local unfuckstateful="1"
   else 
@@ -221,22 +211,6 @@ main() {
 
   ROOT=/tmp/mnt
   patch_root
-
-  if [ "$bootsplash" != "0" ]; then
-    echo "Adding custom bootsplash..."
-    for i in $(seq -f "%02g" 0 30); do
-      rm $ROOT/usr/share/chromeos-assets/images_100_percent/boot_splash_frame${i}.png
-    done
-    cp $bootsplash $ROOT/usr/share/chromeos-assets/images_100_percent/boot_splash_frame00.png
-  else
-    echo "Adding murkmod bootsplash..."
-    install "chromeos-bootsplash-v2.png" /tmp/bootsplash.png
-    for i in $(seq -f "%02g" 0 30); do
-      rm $ROOT/usr/share/chromeos-assets/images_100_percent/boot_splash_frame${i}.png
-    done
-    cp /tmp/bootsplash.png $ROOT/usr/share/chromeos-assets/images_100_percent/boot_splash_frame00.png
-    rm /tmp/bootsplash.png
-  fi
 
   if [ "$unfuckstateful" == "0" ]; then
     touch $ROOT/stateful_unfucked
